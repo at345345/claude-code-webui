@@ -121,6 +121,36 @@ chmod +x claude-code-webui-macos-arm64
 # Open browser to http://localhost:8080
 ```
 
+### Option 4: Build from Source
+
+Build a standalone binary for your platform:
+
+```bash
+# Clone the repository
+git clone https://github.com/sugyan/claude-code-webui.git
+cd claude-code-webui
+
+# Install dependencies
+cd frontend && npm ci && cd ..
+
+# Build frontend assets
+cd frontend && npm run build && cd ..
+
+# Build the backend binary (requires Deno)
+cd backend
+deno task build
+
+# The binary is created at ../dist/claude-code-webui
+cd ..
+./dist/claude-code-webui
+```
+
+**Supported platforms:** Linux (x64/arm64), macOS (x64/arm64), Windows (x64)
+
+> **Note:** `deno task build` bundles the frontend assets into the binary using Deno's `--include` flag, producing a single self-contained executable.
+
+---
+
 ### Option 3: Development Mode
 
 ```bash
