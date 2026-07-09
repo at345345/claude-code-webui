@@ -51,6 +51,7 @@ export function ChatMessageComponent({ message }: ChatMessageComponentProps) {
     <MessageContainer
       alignment={isUser ? "right" : "left"}
       colorScheme={colorScheme}
+      copyText={message.content}
     >
       <div className="mb-2 flex items-center justify-between gap-4">
         <div
@@ -245,6 +246,7 @@ export function PlanMessageComponent({ message }: PlanMessageComponentProps) {
     <MessageContainer
       alignment="left"
       colorScheme="bg-blue-50 dark:bg-blue-900/20 text-blue-900 dark:text-blue-100"
+      copyText={message.plan}
     >
       <div className="mb-3 flex items-center justify-between gap-4">
         <div className="text-xs font-semibold opacity-90 text-blue-700 dark:text-blue-300 flex items-center gap-2">

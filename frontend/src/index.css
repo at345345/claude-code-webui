@@ -2,3 +2,15 @@
 @plugin "@tailwindcss/typography";
 
 @variant dark (.dark &);
+
+@layer components {
+  /* Override typography v4's minimal inline code styling with proper visual distinction */
+  .prose :where(code):not(:where([class~=not-prose],[class~=not-prose *])) {
+    color: oklch(65% 0.12 260);
+    background-color: oklch(25% 0.02 260 / 0.5);
+    padding: 0.1em 0.35em;
+    border-radius: 0.25em;
+    font-size: 0.875em;
+    font-weight: 500;
+  }
+}
