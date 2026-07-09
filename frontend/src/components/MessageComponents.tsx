@@ -291,6 +291,7 @@ export function ThinkingMessageComponent({
         bg: "bg-purple-50/60 dark:bg-purple-900/15 border border-purple-200 dark:border-purple-800",
       }}
       defaultExpanded={true}
+      renderMarkdown={true}
     />
   );
 }
