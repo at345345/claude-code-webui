@@ -16,10 +16,12 @@ A web-based interface for the Claude Code CLI that provides streaming responses 
 - **CLI**: Commander.js for CLI arguments
 - **SDK**: `@anthropic-ai/claude-code` for executing Claude Code commands
 - **Logging**: `@logtape/logtape`
+- **npm package**: Published as `claude-code-webui` with CLI binary at `dist/cli/node.js`
 
 **Key files**:
 
-- `cli/deno.ts` / `cli/node.ts` — Entry points for each runtime
+- `app.ts` — Runtime-agnostic Hono app factory: registers all routes, CORS, config middleware, SPA fallback
+- `cli/deno.ts` / `cli/node.ts` — Entry points for each runtime (CLI parsing + server startup)
 - `cli/args.ts` — CLI argument parsing (port, host, claude-path, debug)
 - `cli/validation.ts` — Universal Claude CLI path detection (PATH tracing, version validation)
 - `runtime/types.ts` — Minimal `Runtime` interface abstracting platform-specific ops (process execution, HTTP serving, static files)
@@ -29,9 +31,10 @@ A web-based interface for the Claude Code CLI that provides streaming responses 
 - `handlers/histories.ts` — Conversation history endpoints
 - `handlers/conversations.ts` — Individual conversation retrieval
 - `handlers/abort.ts` — Request abort endpoint
-- `middleware/config.ts` — Config middleware
+- `middleware/config.ts` — Config middleware (makes app settings available to all handlers)
 - `history/` — Conversation history processing: `parser.ts`, `grouping.ts`, `conversationLoader.ts`, `timestampRestore.ts`, `pathUtils.ts`
 - `utils/logger.ts` — Structured logging wrapper
+- `utils/fs.ts` / `utils/os.ts` — Platform-agnostic filesystem and OS utilities
 
 ### Frontend (`frontend/`)
 
@@ -42,25 +45,36 @@ A web-based interface for the Claude Code CLI that provides streaming responses 
 **Key files**:
 
 - `src/App.tsx` — Root app with routing
+- `src/main.tsx` — Entry point
 - `src/components/ChatPage.tsx` — Main chat page
 - `src/components/DemoPage.tsx` — Demo mode page
 - `src/components/HistoryView.tsx` — Conversation history browser
 - `src/components/ProjectSelector.tsx` — Project directory picker
 - `src/components/MessageComponents.tsx` — Message rendering components (user, assistant, tool, system, plan, thinking, todo)
-- `src/components/messages/` — Message sub-components (MessageContainer, CollapsibleDetails)
-- `src/components/settings/` — Settings components
+- `src/components/MarkdownRenderer.tsx` — Markdown rendering with rehype-sanitize
+- `src/components/SettingsButton.tsx` / `SettingsModal.tsx` — Settings UI
+- `src/components/TimestampComponent.tsx` — Timestamp display
+- `src/components/chat/` — Chat input components: `ChatInput.tsx`, `ChatMessages.tsx`, `PermissionInputPanel.tsx`, `PlanPermissionInputPanel.tsx`, `HistoryButton.tsx`
+- `src/components/messages/` — Message sub-components: `MessageContainer.tsx`, `CollapsibleDetails.tsx`
+- `src/components/settings/` — Settings components: `GeneralSettings.tsx`
 - `src/hooks/useClaudeStreaming.ts` — Streaming hook (delegates to `useStreamParser`)
-- `src/hooks/streaming/` — Streaming utilities (useStreamParser, etc.)
+- `src/hooks/chat/` — Chat state hooks: `useChatState.ts`, `useAbortController.ts`, `usePermissionMode.ts`, `usePermissions.ts`, `usePlanApproval.ts`
+- `src/hooks/streaming/` — Streaming utilities: `useStreamParser.ts`, `useMessageProcessor.ts`
 - `src/hooks/useHistoryLoader.ts` — History loading hook
 - `src/hooks/useMessageConverter.ts` — Message type conversion
 - `src/hooks/useSettings.ts` — Settings management
 - `src/hooks/useDemoAutomation.ts` — Demo automation hook
 - `src/types.ts` — Frontend message types (ChatMessage, SystemMessage, ToolMessage, ToolResultMessage, PlanMessage, ThinkingMessage, TodoMessage) + type guards
+- `src/types/settings.ts` — Settings type definitions
 - `src/utils/UnifiedMessageProcessor.ts` — Central message processing pipeline
 - `src/utils/messageConversion.ts` — SDK message → frontend message conversion
 - `src/utils/contentUtils.ts` — Content preview utilities (edit diffs, bash output, grep results)
+- `src/utils/toolUtils.ts` — Tool-related utilities
 - `src/utils/constants.ts` — UI/keyboard/tool constants
 - `src/utils/storage.ts` — LocalStorage settings persistence
+- `src/utils/environment.ts` — Environment configuration
+- `src/utils/id.ts` — ID generation
+- `src/utils/time.ts` — Time utilities
 - `src/contexts/SettingsContext.tsx` — Settings context provider
 
 ### Shared Types (`shared/`)
