@@ -131,6 +131,26 @@ cd frontend && npx playwright test
 make format-files FILES="frontend/src/path/to/file.tsx"
 ```
 
+## Pre-commit Hook
+
+A [lefthook](https://github.com/evilmartians/lefthook) pre-commit hook runs `make check` automatically before every commit. This enforces formatting, linting, typechecking, and tests. If the hook fails, fix the reported issues before committing.
+
+## Build Pipeline
+
+The build process produces a standalone binary that bundles frontend assets:
+
+1. **Frontend build**: `tsc -b && vite build` → `frontend/dist/`
+2. **Copy dist**: `frontend/dist/` → `backend/dist/`
+3. **Backend compile**: `deno compile` with `--include ./dist/static` → `../dist/claude-code-webui` (single binary)
+
+The resulting binary serves the frontend SPA and exposes the backend API. For npm publishing, `npm pack`/`npm publish` from `backend/` bundles `dist/`, `README.md`, and `LICENSE`.
+
+## Testing Structure
+
+- **Frontend unit tests**: `frontend/src/**/*.test.ts` (Vitest + jsdom + Testing Library)
+- **Frontend E2E tests**: `frontend/tests/` (Playwright — `demo-validation.spec.ts`, `plan-mode.spec.ts`)
+- **Backend unit tests**: `backend/handlers/chat.test.ts`, `backend/history/pathUtils.test.ts`, `backend/tests/node/`
+
 ## Key Design Decisions
 
 1. **Runtime Abstraction**: Backend business logic is platform-agnostic via the `Runtime` interface, with separate Deno and Node.js implementations.
